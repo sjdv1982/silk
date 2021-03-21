@@ -1,0 +1,32 @@
+{% set name = "silk" %}
+{% set version = "0.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+build:
+  noarch: python
+  number: 2
+
+source:
+  path: ../..
+
+requirements:
+  build:
+    - python
+    - setuptools
+  run:
+    - python>=3.7
+    - numpy
+    - jsonschema==3.*
+
+test:
+  imports:
+    - silk
+
+about:
+  home: https://github.com/sjdv1982/silk.git
+  license: MIT
+  license_family: MIT
+  summary: Library for schema validation, object-oriented API wrappers (like ECMAS prototypes), and mixed JSON/binary serialization.
