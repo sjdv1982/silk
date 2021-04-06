@@ -16,7 +16,7 @@ def seamless_encoder(obj):
             obj = float(obj)
             retry = True
     if retry:
-        return default_encoder.encode(obj)
+        return obj
     else:
         typename = obj.__class__.__name__
         raise TypeError("%s object %s is not JSON serializable" % (typename, repr(obj)))
@@ -28,7 +28,6 @@ def json_encode(obj, *, skipkeys=False, ensure_ascii=True, check_circular=True,
 
     Wrapper around json.dumps that overrides the default value of "default"
     """
-    global default_encoder
     default_encoder = json.JSONEncoder(
       skipkeys=skipkeys,
       ensure_ascii=ensure_ascii,
@@ -40,6 +39,7 @@ def json_encode(obj, *, skipkeys=False, ensure_ascii=True, check_circular=True,
       sort_keys=sort_keys,
       **kw
     )
+
     return json.dumps(obj,
       skipkeys=skipkeys,
       ensure_ascii=ensure_ascii,

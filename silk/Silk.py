@@ -98,7 +98,7 @@ class Silk(SilkBase):
         self._parent = parent
         self._parent_attr = _parent_attr
         assert isinstance(data, allowed_types) \
-          or isinstance(data, (Wrapper, FormWrapper))
+          or isinstance(data, (Wrapper, FormWrapper)), type(data)
         self._data = data
         if schema is None:
             schema = {}
