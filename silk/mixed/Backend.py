@@ -470,6 +470,7 @@ class StructuredCellSchemaBackend(StructuredCellBackend):
         sc = self._structured_cell
         if not len(path):
             sc._set_schema_path((), data)
+            assert self.get_data() is data
             return
         subdata = self.get_path(path[:-1])
         attr = path[-1]

@@ -901,12 +901,8 @@ class Silk(SilkBase):
             rich_value.storage
         )
         schema = RichValue(self._schema).value
-        if schema is not None:
-            for k in ("type", "storage", "items"):
-                if k in schema and schema[k] is None:
-                    return # schema is under construction by Seamless
-            schema = AlmostDict(schema)
-            schema_validator(schema).validate(data)
+        schema = AlmostDict(schema)
+        schema_validator(schema).validate(data)
 
     def validate(self, full=True):
         assert full in (True, False, None), full
