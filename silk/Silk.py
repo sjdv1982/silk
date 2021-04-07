@@ -202,11 +202,16 @@ class Silk(SilkBase):
         if attr not in schema["properties"]:
             if value_schema is None:
                 value_schema = {}
-            schema["properties"][attr] = deepcopy(value_schema)
-        subschema = schema["properties"][attr]
+            subschema = deepcopy(value_schema)
+            new_subschema = True
+        else:
+            subschema = schema["properties"][attr]
+            new_subschema = False
         subpolicy = self._get_policy(subschema, policy)
         dummy = Silk(schema=subschema, parent=self)
         dummy._infer(subpolicy, RichValue(value))
+        if new_subschema:
+            schema["properties"][attr] = subschema
 
     def _infer_object(self, schema, policy, rich_value):
         assert isinstance(rich_value, RichValue)
@@ -896,8 +901,12 @@ class Silk(SilkBase):
             rich_value.storage
         )
         schema = RichValue(self._schema).value
-        schema = AlmostDict(schema)
-        schema_validator(schema).validate(data)
+        if schema is not None:
+            for k in ("type", "storage", "items"):
+                if k in schema and schema[k] is None:
+                    return # schema is under construction by Seamless
+            schema = AlmostDict(schema)
+            schema_validator(schema).validate(data)
 
     def validate(self, full=True):
         assert full in (True, False, None), full

@@ -2,6 +2,7 @@ from copy import deepcopy
 from collections import defaultdict
 
 from .get_form import get_form as calc_form
+from . import scalars
 
 def get_subform(form, path):
     if not len(path):

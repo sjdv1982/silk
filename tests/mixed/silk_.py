@@ -211,7 +211,6 @@ a = Silk(data=mixed_object)
 silk_backend.set_silk(a)
 a.coor = [0.0,0.0,1.0]
 pprint(a.coor.schema)
-exit(0)
 print(a.coor.data)
 print("START")
 np.array(a.coor.data)

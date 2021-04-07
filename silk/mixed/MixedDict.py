@@ -6,7 +6,10 @@ from .get_form import get_form_dict
 class MixedDict(MixedBase, MutableMapping):
     def __getitem__(self, item):
         path = self._path + (item,)
-        return self._monitor.get_path(path)
+        try:
+            return self._monitor.get_path(path)
+        except TypeError:
+            raise KeyError
     def __setitem__(self, item, value):
         path = self._path + (item,)
         self._monitor.set_path(path, value)
@@ -25,10 +28,11 @@ class MixedDict(MixedBase, MutableMapping):
         return len(data)
     def clear(self):
         data = self._monitor.get_data(self._path)
-        for path in list(data.keys()):
-            if isinstance(path, str):
-                path = (path,)
-            self._monitor.del_path(path)
+        if data is not None:
+            for path in list(data.keys()):
+                if isinstance(path, str):
+                    path = (path,)
+                self._monitor.del_path(path)
     def update(self, other):
         if isinstance(other, MixedBase):
             other = other.value
@@ -52,4 +56,3 @@ class MixedNumpyStruct(MixedBase, MutableMapping):
     def __len__(self):
         data = self._monitor.get_data(self._path)
         return len(data.dtype.fields)
-
