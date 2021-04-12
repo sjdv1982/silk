@@ -110,15 +110,27 @@ def unwrapped(func):
         return func(validator, arg, unwrapped_instance, schema)
     return func2
 
+_wrap_validators = (
+    "properties",
+    "patternProperties",
+    "propertyNames",
+    "additionalProperties",
+    "items",
+    "additionalItems",
+)
 class BaseValidator(jsonschema.Draft4Validator):
-    VALIDATORS = {k: unwrapped(v) for k,v in jsonschema.Draft4Validator.VALIDATORS.items()}
+    VALIDATORS = {
+        k: unwrapped(v) if k not in _wrap_validators else v
+        for k,v in jsonschema.Draft4Validator.VALIDATORS.items()
+    }
 
 
-schema_validator0 = jsonschema.validators.extend(BaseValidator, {
-    "items": validator_items,
-    "form": validator_form,
-    "storage": validator_storage,
-    "validators": validator_validators
+schema_validator0 = jsonschema.validators.extend(BaseValidator,
+    {
+        "items": validator_items,
+        "form": validator_form,
+        "storage": validator_storage,
+        "validators": validator_validators
     },
     type_checker=type_checker
 )
