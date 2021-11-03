@@ -14,7 +14,8 @@ def get_subform(form, path):
        return None
     type_ = form["type"]
     if type_ == "object":
-        assert isinstance(attr, str), attr
+        if not isinstance(attr, str):
+            raise AttributeError(attr)
         if "properties" not in form:
             return None
             #raise ValueError(form)
@@ -23,7 +24,8 @@ def get_subform(form, path):
             return None
         subform = form["properties"][attr]
     elif type_ in ("array", "tuple"):
-        assert isinstance(attr, int), attr
+        if not isinstance(attr, int):
+            raise AttributeError(attr)
         if attr < 0:
             items = form["items"]
             attr = len(items) + attr
@@ -53,13 +55,15 @@ class Backend:
 
     def get_subform(self, path):
         for pp in path:
-            assert isinstance(pp, (int, str))
+            if not isinstance(pp, (int, str)):
+                raise AttributeError(path)
         form = self.get_form()
         return get_subform(form, path)
 
     def set_path(self, path, data):
         for pp in path:
-            assert isinstance(pp, (int, str))
+            if not isinstance(pp, (int, str)):
+                raise AttributeError(path)
         if data is None:
             return self.del_path(path)
         if self.formless:
@@ -100,7 +104,8 @@ class Backend:
 
     def del_path(self, path):
         for pp in path:
-            assert isinstance(pp, (int, str))
+            if not isinstance(pp, (int, str)):
+                raise AttributeError(path)
         if not len(path):
             self._del_path(())
             return
@@ -127,7 +132,8 @@ class Backend:
 
     def insert_path(self, path, data):
         for pp in path:
-            assert isinstance(pp, (int, str))
+            if not isinstance(pp, (int, str)):
+                raise TypeError(path)
         attr = path[-1]
         if not isinstance(attr, int):
             raise TypeError(path)
@@ -180,7 +186,8 @@ class DefaultBackend(Backend):
 
     def get_path(self, path):
         for pp in path:
-            assert isinstance(pp, (int, str))
+            if not isinstance(pp, (int, str)):
+                raise TypeError(path)
         data = self.get_data()
         if not len(path):
             return data
@@ -205,7 +212,8 @@ class DefaultBackend(Backend):
         attr = path[-1]
         if isinstance(attr, int):
             if attr >= len(subdata):
-                assert isinstance(subdata, list), type(subdata)
+                if not isinstance(subdata, list):
+                    raise TypeError(type(subdata))
                 for n in range(len(subdata), attr + 1):
                     subdata.append(None)
         subdata[attr] = data
@@ -213,8 +221,10 @@ class DefaultBackend(Backend):
     def _insert_path(self, data, path):
         subdata = self.get_path(path[:-1])
         attr = path[-1]
-        assert isinstance(attr, int)
-        assert isinstance(subdata, list)
+        if not isinstance(attr, int):
+            raise AttributeError(attr)
+        if not isinstance(subdata, list):
+            raise TypeError(subdata)
         if len(subdata) >= attr:
             for n in range(len(subdata), attr+1):
                 subdata.append(None)
@@ -385,7 +395,8 @@ class StructuredCellBackend(Backend):
                 subdata = self.get_path(path[:-1])
             if isinstance(attr, int):
                 if attr >= len(subdata):
-                    assert isinstance(subdata, list), type(subdata)
+                    if not isinstance(subdata, list):
+                        raise TypeError(type(subdata))
                     for n in range(len(subdata), attr):
                         sc._set_auth_path(subpath + (n,), None)
         sc._set_auth_path(path, data)
@@ -477,7 +488,8 @@ class StructuredCellSchemaBackend(StructuredCellBackend):
         subpath = path[:-1]
         if isinstance(attr, int):
             if attr >= len(subdata):
-                assert isinstance(subdata, list), type(subdata)
+                if not isinstance(subdata, list):
+                    raise TypeError(type(subdata))
                 for n in range(len(subdata), attr):
                     sc._set_schema_path(subpath + (n,), None)
         sc._set_schema_path(path, data)

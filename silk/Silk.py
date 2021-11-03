@@ -824,7 +824,14 @@ class Silk(SilkBase):
 
     def _getitem(self, item):
         data, schema = self._data, self._schema
-        if isinstance(item, str) and hasattr2(data, item):
+        attr_in_data = False
+        if isinstance(item, str):
+            if hasattr2(data, item):
+                attr_in_data = True
+                if isinstance(data, MixedBase):
+                    if item in ("value", "storage", "form", "set"):
+                        raise AttributeError(item)
+        if attr_in_data:
             try:
                 result = getattr(data, item)
             except AttributeError:
@@ -864,6 +871,8 @@ class Silk(SilkBase):
         else:
             schema_props = schema.get("properties", None)
             if schema_props is None:
+                if "items" in schema:
+                    raise AttributeError
                 schema_props = init_object_schema(self, schema)
             child_schema = schema_props.get(item, None)
             if child_schema is None:
@@ -946,7 +955,7 @@ class SilkIterator:
 
 
 from .modify_methods import try_modify_methods
-from .mixed import is_contiguous, is_unsigned
+from .mixed import MixedBase, is_contiguous, is_unsigned
 from .mixed.get_form import get_form
 from .validation.formwrapper import FormWrapper
 from . import Wrapper
