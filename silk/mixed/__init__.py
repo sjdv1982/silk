@@ -58,15 +58,15 @@ class MixedBase(Wrapper):
         if attr.startswith("_"):
             return super().__setattr__(attr, value)
         return self.__setitem__(attr, value)
-        raise AttributeError(attr)
     def __getattr__(self, attr):
         if attr.startswith("_"):
+            raise AttributeError(attr)
+        if attr == "value":
             raise AttributeError(attr)
         if isinstance(self.value, np.ndarray):
             return getattr(self.value, attr)
         else:
             return self.__getitem__(attr)
-        raise AttributeError(attr)
     def __str__(self):
         return str(self.value)
     def __repr__(self):

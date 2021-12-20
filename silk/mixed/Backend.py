@@ -318,7 +318,7 @@ class StructuredCellBackend(Backend):
         sc = self._structured_cell
         if sc.hash_pattern is None:
             return None
-        elif sc.hash_pattern == {"*": "#"}:
+        elif sc.hash_pattern in ({"*": "#"}, {"*": "##"}):
             return dict
         elif sc.hash_pattern == {"!": "#"}:
             return list
@@ -369,7 +369,7 @@ class StructuredCellBackend(Backend):
         if sc.hash_pattern is None:
             probe_sub = True
         else:
-            if sc.hash_pattern == {"*": "#"}:
+            if sc.hash_pattern in ({"*": "#"},{"*": "##"}):
                 if len(path) == 1:
                     if sc._auth_none():
                         sc._set_auth_path((), {})
