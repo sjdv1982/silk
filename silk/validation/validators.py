@@ -45,7 +45,6 @@ def validator_items(validator, items, instance, schema):
         yield error
 
 def _validator_storage(storage, instance_storage, form_str=None):
-    #TODO: raise proper ValidationErrors
     if instance_storage is None:
         return
     storages = ("pure-plain", "mixed-plain", "pure-binary", "mixed-binary")
@@ -111,6 +110,10 @@ def validator_form(validator, form, instance, schema, _from_items=False):
     """
     assert isinstance(instance, FormWrapper), type(instance)
 
+    # repeat storage validation (must be executed before form validation, else error messages are cryptic)
+    if schema["storage"]:
+        for err in validator_storage(None, schema["storage"], instance, None):
+            yield err
     def _allowed_value(schema_value, instance_value):
         if isinstance(schema_value, (list, tuple)):
             if instance_value in schema_value:
@@ -141,15 +144,18 @@ def validator_form(validator, form, instance, schema, _from_items=False):
     if _from_items:
         form_str += "\n(on items)"
     binary_form_props = ("unsigned", "shape", "bytesize", "strides", "ndim")
+    instance_form = instance._form
+    if instance_form is None:
+        instance_form = {}
     for key, value in sorted(form.items(),key=lambda item:item[0]):
         if key in binary_form_props and not storage.endswith("binary"):
             continue
         missing_key = None
         if key == "ndim":
-            if "shape" not in instance._form:
+            if "shape" not in instance_form:
                 missing_key = "'shape' (needed by ndim)"
         else:
-            if key not in instance._form:
+            if key not in instance_form:
                 missing_key = "'" + key  + "'"
         if missing_key:
             msg = textwrap.dedent("""
@@ -162,10 +168,10 @@ def validator_form(validator, form, instance, schema, _from_items=False):
             ) % (missing_key, form_str)
             yield ValidationError(msg)
         if key != "ndim":
-            instance_value = instance._form[key]
+            instance_value = instance_form[key]
         ok = True
         if key == "ndim":
-            instance_value = len(instance._form["shape"])
+            instance_value = len(instance_form["shape"])
             if instance_value != value:
                 ok = False
         elif key == "strides":
@@ -198,7 +204,7 @@ def validator_form(validator, form, instance, schema, _from_items=False):
 
     if not _from_items and is_numpy_structure_schema(schema):
         assert storage is not None, schema
-        if "items" not in instance._form:
+        if "items" not in instance_form:
             msg = textwrap.dedent("""
 
                 No form property 'items'
@@ -209,7 +215,7 @@ def validator_form(validator, form, instance, schema, _from_items=False):
             ) % (form_str,)
             yield ValidationError(msg)
             return
-        form_wrapper =  FormWrapper(None, instance._form["items"], storage)
+        form_wrapper =  FormWrapper(None, instance_form["items"], storage)
         items_form = schema.get("items", {}).get("form" ,  {})
         for error in validator_form(
             validator,

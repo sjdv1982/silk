@@ -10,7 +10,7 @@ class FormWrapper:
     _storage = None
 
     def __init__(self, wrapped, form, storage):
-        assert isinstance(storage, (str, type(None)))
+        assert storage in (None, "pure-plain", "mixed-plain", "pure-binary", "mixed-binary"), storage
         self._wrapped = wrapped
         self._form = form
         self._storage = storage
@@ -51,7 +51,6 @@ class FormWrapper:
                 if "properties" in form:
                     subform = form["properties"].get(item)
             if isinstance(subform, str):
-                substorage = subform
                 subform = None
             elif subform is None:
                 pass

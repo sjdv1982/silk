@@ -454,4 +454,5 @@ def get_form(data):
         storage, typedef = get_form_dict_plain(data)
     else:
         raise TypeError(type(data))
+    assert storage in (None, "pure-plain", "mixed-plain", "pure-binary", "mixed-binary"), storage
     return storage, typedef

@@ -304,7 +304,10 @@ class Silk(SilkBase):
                     schema["form"] = {}
                 form_schema = schema["form"]
             if policy["infer_ndim"]:
-                form_schema["ndim"] = value.ndim
+                if value.ndim > 0:
+                    form_schema["ndim"] = value.ndim
+                elif value.dtype.kind == "S":
+                    form_schema["ndim"] = 1
             if policy["infer_strides"]:
                 contiguous = is_contiguous(value)
                 if contiguous:
@@ -314,7 +317,10 @@ class Silk(SilkBase):
                     form_schema.pop("contiguous", None)
                     form_schema["strides"] = value.strides
             if policy["infer_shape"]:
-                form_schema["shape"] = value.shape
+                if value.ndim == 0:
+                    form_schema["shape"] = value.nbytes
+                else:    
+                    form_schema["shape"] = value.shape
         if not policy["infer_array"]:
             return
 
@@ -324,6 +330,16 @@ class Silk(SilkBase):
                 value_item_schema = value_schema.get("items")
             if value_item_schema is not None:
                 schema["items"] = deepcopy(value_item_schema)
+            elif storage == "binary" and value.ndim == 0:
+                if value.dtype.kind != 'S':
+                    return
+                item_schema = {
+                    "form": {
+                        "bytesize": 1,
+                        "type": "string",
+                    }
+                }
+                schema["items"] = item_schema
             else:
                 bytesize = None
                 first_item_type = None
