@@ -307,7 +307,7 @@ class Silk(SilkBase):
                 if value.ndim > 0:
                     form_schema["ndim"] = value.ndim
                 elif value.dtype.kind == "S":
-                    form_schema["ndim"] = 1
+                    form_schema["ndim"] = 0
             if policy["infer_strides"]:
                 contiguous = is_contiguous(value)
                 if contiguous:
@@ -334,10 +334,7 @@ class Silk(SilkBase):
                 if value.dtype.kind != 'S':
                     return
                 item_schema = {
-                    "form": {
-                        "bytesize": 1,
-                        "type": "string",
-                    }
+                    "type": "string"
                 }
                 schema["items"] = item_schema
             else:
