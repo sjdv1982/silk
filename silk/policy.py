@@ -10,7 +10,7 @@ default_policy = {
     "infer_type":  True,
     "infer_storage":  True,
     "infer_ndim":  True,
-    "infer_strides":  False,
+    "infer_strides":  True,
     "infer_recursive":  False,
     "binary_validation": True,
     "infer_shape":  False,
