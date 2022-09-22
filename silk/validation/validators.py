@@ -111,7 +111,7 @@ def validator_form(validator, form, instance, schema, _from_items=False):
     assert isinstance(instance, FormWrapper), type(instance)
 
     # repeat storage validation (must be executed before form validation, else error messages are cryptic)
-    if schema["storage"]:
+    if schema.get("storage"):
         for err in validator_storage(None, schema["storage"], instance, None):
             yield err
     def _allowed_value(schema_value, instance_value):
