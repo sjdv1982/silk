@@ -221,7 +221,7 @@ def get_tform_numpy_builtin(dt):
 
     typedef = {
         "type": typedef0,
-        "bytesize": dt.itemsize,
+        "bytesize": dt.base.itemsize,
     }
     if typedef0 == "integer":
         unsigned = is_unsigned(dt)
