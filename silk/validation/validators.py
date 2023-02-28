@@ -8,7 +8,6 @@ try:
 except ImportError:
     from jsonschema._validators import type_draft4 as validator_type_ORIGINAL
 
-from jsonschema._utils import indent
 from .formwrapper import FormWrapper
 from . import is_numpy_structure_schema, _types
 from ..SilkBase import compile_function
@@ -25,6 +24,12 @@ TODO: storage is now often re-computed (see "TODO:BAD" below)
 For now, this seems to be not too costly, so low-priority fix
 """
 
+def indent(string, times=1):
+    """
+    A dumb version of `textwrap.indent` from Python 3.3.
+    """
+
+    return "\n".join(" " * (4 * times) + line for line in string.splitlines())
 def validator_items(validator, items, instance, schema):
     """Replacement for the validation of "items"
     Pass-through to the standard validator if any of the following:
