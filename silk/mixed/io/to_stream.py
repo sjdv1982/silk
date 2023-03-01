@@ -49,6 +49,8 @@ def _to_stream(
             if type_ != "array":
                 return None, buffer_offset #already taken into account, unless Numpy array
         #plain parent, or we occupy a Python object slot in the parent Numpy struct
+        if isinstance(data, bytes):
+            data = np.array(data)
         my_data = _copy_into_buffer(data, buffer, buffer_offset)
         buffersize = data.nbytes
         new_buffer_offset = buffer_offset + buffersize

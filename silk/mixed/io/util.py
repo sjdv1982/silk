@@ -164,6 +164,8 @@ def get_buffersize(storage, form, binary_parent=None):
 def get_buffersize_debug(data, storage, form, binary_parent=None):
     if storage.endswith("binary"):
         dtype_from_form = form_to_dtype(form, storage)
+        if isinstance(data, bytes):
+            data = np.array(data)
         data_dtype = "<None>" if not hasattr(data, "dtype") else data.dtype
         err = "\n".join(["",repr(dtype_from_form), repr(data_dtype), repr(form)])
         assert dtype_from_form == data_dtype, err
