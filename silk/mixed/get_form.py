@@ -274,7 +274,7 @@ def get_tform_numpy_struct(dt):
 
 
 def is_np_str(dt):
-    return dt == np.dtype("S%d" % dt.itemsize)
+    return dt == np.dtype("S%d" % dt.itemsize) or dt == np.dtype("U%d" % (dt.itemsize/4))
 
 def get_tform_numpy(dt):
     if dt.base.isbuiltin or is_np_str(dt) or dt in dt_builtins:

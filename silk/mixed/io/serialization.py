@@ -8,6 +8,10 @@ def serialize(data, *, storage=None, form=None):
     from ..get_form import get_form
     if storage is None or form is None:
         storage, form = get_form(data)
+    if storage == "pure-binary" and not isinstance(data, bytes): 
+        dt = data.dtype
+        if dt == np.dtype("U%d" % (dt.itemsize/4)):
+            return to_stream(data.tolist()[0], "pure-plain", None)
     content = to_stream(data, storage, form)
     if storage in ("pure-plain", "pure-binary"):
         return content
