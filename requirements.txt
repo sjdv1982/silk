@@ -1,2 +1,2 @@
 numpy
-jsonschema>=4.*,<=4.18.*
+jsonschema>=4.*,<=4.18.999
